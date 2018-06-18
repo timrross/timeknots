@@ -61,6 +61,23 @@ var TimeKnots = {
       y2: null
     }
 
+    function inflateKnot(node, d) {
+      svg.selectAll("circle").sort(function (a) {
+        if (a.date !== d.date) return -1;
+        else return 1;
+      });
+
+      d3.select(node)
+        .style("fill", function (d) { if (d.color != undefined) { return d.color } return cfg.color }).transition()
+        .duration(100).attr("r", function (d) { if (d.radius != undefined) { return Math.floor(d.radius * 1.5) } return Math.floor(cfg.radius * 1.5) });
+    }
+
+    function deflateKnot(node) {
+      d3.select(node)
+        .style("fill", function (d) { if (d.background != undefined) { return d.background } return cfg.background }).transition()
+        .duration(100).attr("r", function (d) { if (d.radius != undefined) { return d.radius } return cfg.radius });
+    }
+
     svg.selectAll("line")
       .data(events).enter().append("line")
       .attr("class", "timeline-line")
@@ -167,13 +184,7 @@ var TimeKnots = {
           var datetime = d.value;
           var dateValue = d.name + " <small>(" + d.value + ")</small>";
         }
-        svg.selectAll("circle").sort(function (a) {
-          if (a.date !== d.date) return -1;
-          else return 1;
-        });
-        d3.select(this)
-          .style("fill", function (d) { if (d.color != undefined) { return d.color } return cfg.color }).transition()
-          .duration(100).attr("r", function (d) { if (d.radius != undefined) { return Math.floor(d.radius * 1.5) } return Math.floor(cfg.radius * 1.5) });
+        inflateKnot(this, d);
         tip.html("");
         if (d.img != undefined) {
           tip.append("img").style("float", "left").style("margin-right", "4px").attr("src", d.img).attr("width", "64px");
@@ -182,18 +193,22 @@ var TimeKnots = {
         tip.transition()
           .duration(100)
           .style("opacity", .9);
-
       })
-      .on("mouseout", function () {
-        d3.select(this)
-          .style("fill", function (d) { if (d.background != undefined) { return d.background } return cfg.background }).transition()
-          .duration(100).attr("r", function (d) { if (d.radius != undefined) { return d.radius } return cfg.radius });
+      .on("mouseout", function (d) {
+        if (!d.selected) {
+          deflateKnot(this);
+        }
         tip.transition()
           .duration(100)
           .style("opacity", 0)
       })
       .on("click", function (d) {
         cfg.onKnotClick(d);
+      })
+      .each(function (d) {
+        if (d.selected) {
+          inflateKnot(this, d);
+        }
       });
 
     //Adding start and end labels
@@ -223,7 +238,7 @@ var TimeKnots = {
       tipPixels = parseInt(tip.style("height").replace("px", ""));
       return tip.style("top", (d3.event.pageY - tipPixels - margin) + "px").style("left", (d3.event.pageX + 20) + "px");
     })
-      .on("mouseout", function () { return tip.style("opacity", 0).style("top", "0px").style("left", "0px"); });
+    .on("mouseout", function () { return tip.style("opacity", 0).style("top", "0px").style("left", "0px"); });
   }
 }
 
