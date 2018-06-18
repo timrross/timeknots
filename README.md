@@ -12,6 +12,7 @@ General Options
 * `radius`: radius of the knots (default: `10` pixels)
 * `lineWidth`: width of the lines used to draw timeknots (default: `4` pixels)
 * `color`: color used for the visualization (default: `999`)
+* `selectedColor`: color used for a selected knot (default: `000`)
 * `background`: Background color of the visualization (default: `FFF`)
 * `dateFormat`: Format of the dates displayed (default: `%Y/%m/%d %H:%M:%S`)
 * `horizontalLayout`: orientation in which the timeknots will be displayed horizontal or vertical (default: `true`),
@@ -29,6 +30,7 @@ It is possible to include or override certain options for particular knots. Thes
 * `color`: Draw this knot using this particular color
 * `lineWidth`: Draw thiw knot using this particular line width
 * `background`: Draw thiw knot using this particular background
+* `selected`: Display this node as selected
 
 
 Examples
