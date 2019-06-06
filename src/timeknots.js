@@ -83,16 +83,16 @@ const TimeKnots = {
 
     function inflateKnot(node) {
       d3.select(node)
-        .style('fill', (data) => { if (data.color !== undefined) { return data.color; } return cfg.color; }).transition()
+        .style('fill', (d) => { if (d.color !== undefined) { return d.color; } return cfg.color; }).transition()
         .duration(100)
-        .attr('r', (data) => { if (data.radius !== undefined) { return Math.floor(data.radius * 1.5); } return Math.floor(cfg.radius * 1.5); });
+        .attr('r', (d) => { if (d.radius !== undefined) { return Math.floor(d.radius * 1.5); } return Math.floor(cfg.radius * 1.5); });
     }
 
     function deflateKnot(node) {
       d3.select(node)
-        .style('fill', (data) => { if (data.background !== undefined) { return data.background; } return cfg.background; }).transition()
+        .style('fill', (d) => { if (d.background !== undefined) { return d.background; } return cfg.background; }).transition()
         .duration(100)
-        .attr('r', (data) => { if (data.radius !== undefined) { return data.radius; } return cfg.radius; });
+        .attr('r', (d) => { if (d.radius !== undefined) { return d.radius; } return cfg.radius; });
     }
 
     svg.selectAll('line')
@@ -185,8 +185,9 @@ const TimeKnots = {
         return Math.floor(cfg.width / 2);
       })
       .on('mouseover', function (d) {
-        let format; let datetime; let
-          dateValue;
+        let format;
+        let datetime;
+        let dateValue;
         if (cfg.dateDimension) {
           format = d3.timeFormat(cfg.dateFormat);
           datetime = format(new Date(d.date));
