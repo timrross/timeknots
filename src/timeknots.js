@@ -33,6 +33,8 @@ const TimeKnots = {
       events.push({ date: new Date(), name: cfg.addNowLabel || 'Today' });
     }
     const tip = d3.select(id)
+      // Set the main element to position relative so the tip is positioned correctly.
+      .style('position', 'relative')
       .append('div')
       .style('opacity', 0)
       .style('position', 'absolute')
@@ -54,9 +56,14 @@ const TimeKnots = {
       maxValue = d3.max(timestamps);
       minValue = d3.min(timestamps);
     }
+
+    // Margin is the offset for each point.
     margin = (d3.max(events.map(d => d.radius)) || cfg.radius) * 1.5 + cfg.lineWidth;
+
+    // The step is how many pixels each time division is.
     step = (cfg.horizontalLayout) ? ((cfg.width - 2 * margin) / (maxValue - minValue))
       : ((cfg.height - 2 * margin) / (maxValue - minValue));
+
     const series = [];
     if (maxValue === minValue) {
       step = 0;
@@ -244,9 +251,10 @@ const TimeKnots = {
         .attr('y', function getY() { if (cfg.horizontalLayout) { return Math.floor(cfg.height / 2 + (margin + this.getBBox().height)); } return cfg.height - margin + this.getBBox().height / 2; });
     }
 
-    svg.on('mousemove', () => {
-      const tipPixels = parseInt(tip.style('height').replace('px', ''), 10);
-      return tip.style('top', `${d3.event.pageY - tipPixels - margin}px`).style('left', `${d3.event.pageX + 20}px`);
+    svg.on('mousemove', function () {
+      const tipHeight = parseInt(tip.style('height').replace('px', ''), 10);
+      const [mouseX, mouseY] = d3.mouse(this);
+      return tip.style('top', `${mouseY - tipHeight - margin}px`).style('left', `${mouseX + (margin / 2)}px`);
     });
     svg.on('mouseout', () => tip.style('opacity', 0).style('top', '0px').style('left', '0px'));
   },
