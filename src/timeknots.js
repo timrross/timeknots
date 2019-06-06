@@ -10,7 +10,7 @@ const TimeKnots = {
       color: '#999',
       background: '#FFF',
       dateFormat: '%Y/%m/%d %H:%M:%S',
-      horizontalLayout: true,
+      verticalLayout: false,
       showLabels: false,
       labelDateFormat: '%Y/%m/%d',
       labelFormat: label => `${label.name} <small>${label.date}</small>`,
@@ -66,8 +66,9 @@ const TimeKnots = {
     margin = (d3.max(events.map(d => d.radius)) || cfg.radius) * 1.5 + cfg.lineWidth;
 
     // The step is how many pixels each time division is.
-    step = (cfg.horizontalLayout) ? ((cfg.width - 2 * margin) / (maxValue - minValue))
-      : ((cfg.height - 2 * margin) / (maxValue - minValue));
+    step = (cfg.verticalLayout)
+      ? ((cfg.height - 2 * margin) / (maxValue - minValue))
+      : ((cfg.width - 2 * margin) / (maxValue - minValue));
 
     const series = [];
     if (maxValue === minValue) {
@@ -122,11 +123,11 @@ const TimeKnots = {
       .attr('class', 'timeline-line')
       .attr('x1', (d) => {
         let ret;
-        if (cfg.horizontalLayout) {
+        if (cfg.verticalLayout) {
+          ret = Math.floor(cfg.width / 2);
+        } else {
           const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
           ret = Math.floor(step * (datum - minValue) + margin);
-        } else {
-          ret = Math.floor(cfg.width / 2);
         }
         linePrevious.x1 = ret;
         return ret;
@@ -139,11 +140,11 @@ const TimeKnots = {
       })
       .attr('y1', (d) => {
         let ret;
-        if (cfg.horizontalLayout) {
-          ret = Math.floor(cfg.height / 2);
-        } else {
+        if (cfg.verticalLayout) {
           const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
           ret = Math.floor(step * (datum - minValue)) + margin;
+        } else {
+          ret = Math.floor(cfg.height / 2);
         }
         linePrevious.y1 = ret;
         return ret;
@@ -152,13 +153,11 @@ const TimeKnots = {
         if (linePrevious.y1 !== null) {
           return linePrevious.y1;
         }
-        if (cfg.horizontalLayout) {
-          return Math.floor(cfg.height / 2);
+        if (cfg.verticalLayout) {
+          const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
+          return Math.floor(step * (datum - minValue));
         }
-        const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
-        return Math.floor(step * (datum - minValue));
-      })
-        }
+        return Math.floor(cfg.height / 2);
       })
       .style('stroke', getColor)
       .style('stroke-width', cfg.lineWidth);
@@ -172,19 +171,19 @@ const TimeKnots = {
       .style('stroke-width', (d) => { if (d.lineWidth !== undefined) { return d.lineWidth; } return cfg.lineWidth; })
       .style('fill', (d) => { if (d.background !== undefined) { return d.background; } return cfg.background; })
       .attr('cy', (d) => {
-        if (cfg.horizontalLayout) {
-          return Math.floor(cfg.height / 2);
+        if (cfg.verticalLayout) {
+          const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
+          return Math.floor(step * (datum - minValue) + margin);
         }
-        const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
-        return Math.floor(step * (datum - minValue) + margin);
+        return Math.floor(cfg.height / 2);
       })
       .attr('cx', (d) => {
-        if (cfg.horizontalLayout) {
-          const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
-          const x = Math.floor(step * (datum - minValue) + margin);
-          return x;
+        if (cfg.verticalLayout) {
+          return Math.floor(cfg.width / 2);
         }
-        return Math.floor(cfg.width / 2);
+        const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
+        const x = Math.floor(step * (datum - minValue) + margin);
+        return x;
       })
       .on('mouseover', function (d) {
         let format;
@@ -262,13 +261,13 @@ const TimeKnots = {
       }
       svg.append('text')
         .text(startString).style('font-size', '70%')
-        .attr('x', function getX() { if (cfg.horizontalLayout) { return d3.max([0, (margin - this.getBBox().width / 2)]); } return Math.floor(this.getBBox().width / 2); })
-        .attr('y', function getY() { if (cfg.horizontalLayout) { return Math.floor(cfg.height / 2 + (margin + this.getBBox().height)); } return margin + this.getBBox().height / 2; });
+        .attr('x', function getX() { if (cfg.verticalLayout) { return Math.floor(this.getBBox().width / 2); } return d3.max([0, (margin - this.getBBox().width / 2)]); })
+        .attr('y', function getY() { if (cfg.verticalLayout) { return margin + this.getBBox().height / 2; } return Math.floor(cfg.height / 2 + (margin + this.getBBox().height)); });
 
       svg.append('text')
         .text(endString).style('font-size', '70%')
-        .attr('x', function getX() { if (cfg.horizontalLayout) { return cfg.width - d3.max([this.getBBox().width, (margin + this.getBBox().width / 2)]); } return Math.floor(this.getBBox().width / 2); })
-        .attr('y', function getY() { if (cfg.horizontalLayout) { return Math.floor(cfg.height / 2 + (margin + this.getBBox().height)); } return cfg.height - margin + this.getBBox().height / 2; });
+        .attr('x', function getX() { if (cfg.verticalLayout) { return Math.floor(this.getBBox().width / 2); } return cfg.width - d3.max([this.getBBox().width, (margin + this.getBBox().width / 2)]); })
+        .attr('y', function getY() { if (cfg.verticalLayout) { return cfg.height - margin + this.getBBox().height / 2; } return Math.floor(cfg.height / 2 + (margin + this.getBBox().height)); });
     }
 
     svg.on('mousemove', function () {
