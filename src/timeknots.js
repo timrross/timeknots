@@ -13,6 +13,7 @@ const TimeKnots = {
       horizontalLayout: true,
       showLabels: false,
       labelFormat: '%Y/%m/%d %H:%M:%S',
+      showTip: true,
       addNow: false,
       seriesColor: d3.scaleOrdinal(d3.schemeCategory10),
       dateDimension: true,
@@ -40,15 +41,10 @@ const TimeKnots = {
       // Set the main element to position relative so the tip is positioned correctly.
       .style('position', 'relative')
       .append('div')
+      .attr('class', 'timeline-tip')
       .style('opacity', 0)
-      .style('position', 'absolute')
-      .style('font-family', 'Helvetica Neue')
-      .style('font-weight', '300')
-      .style('background', 'rgba(0,0,0,0.5)')
-      .style('color', 'white')
-      .style('padding', '5px 10px 5px 10px')
-      .style('-moz-border-radius', '8px 8px')
-      .style('border-radius', '8px 8px');
+      .style('position', 'absolute');
+
     const svg = d3.select(id)
       .append('svg')
       .style('width', '100%');
@@ -205,23 +201,28 @@ const TimeKnots = {
 
         inflateKnot(this);
 
-        tip.html('');
-        if (d.img !== undefined) {
-          tip.append('img').style('float', 'left').style('margin-right', '4px').attr('src', d.img)
-            .attr('width', '64px');
+        if (cfg.showTip) {
+          tip.html('');
+          if (d.img !== undefined) {
+            tip.append('img').attr('src', d.img);
+          }
+          tip.append('div').html(dateValue);
+          tip.transition()
+            .duration(100)
+            .style('opacity', 0.9);
         }
-        tip.append('div').style('float', 'left').html(dateValue);
-        tip.transition()
-          .duration(100)
-          .style('opacity', 0.9);
+        }
       })
       .on('mouseout', function (d) {
         if (!d.selected) {
           deflateKnot(this);
         }
-        tip.transition()
-          .duration(100)
-          .style('opacity', 0);
+
+        if (cfg.showTip) {
+          tip.transition()
+            .duration(100)
+            .style('opacity', 0);
+        }
       })
       .on('click', (d) => {
         if (typeof cfg.onClick === 'function') {
