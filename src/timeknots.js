@@ -16,6 +16,7 @@ const TimeKnots = {
       addNow: false,
       seriesColor: d3.scaleOrdinal(d3.schemeCategory10),
       dateDimension: true,
+      onClick: null,
     };
 
     let timestamps;
@@ -72,6 +73,20 @@ const TimeKnots = {
       y1: null,
       y2: null,
     };
+
+    function inflateKnot(node) {
+      d3.select(node)
+        .style('fill', (data) => { if (data.color !== undefined) { return data.color; } return cfg.color; }).transition()
+        .duration(100)
+        .attr('r', (data) => { if (data.radius !== undefined) { return Math.floor(data.radius * 1.5); } return Math.floor(cfg.radius * 1.5); });
+    }
+
+    function deflateKnot(node) {
+      d3.select(node)
+        .style('fill', (data) => { if (data.background !== undefined) { return data.background; } return cfg.background; }).transition()
+        .duration(100)
+        .attr('r', (data) => { if (data.radius !== undefined) { return data.radius; } return cfg.radius; });
+    }
 
     svg.selectAll('line')
       .data(events).enter().append('line')
@@ -173,10 +188,9 @@ const TimeKnots = {
           datetime = d.value;
           dateValue = `${d.name} <small>(${d.value})</small>`;
         }
-        d3.select(this)
-          .style('fill', (data) => { if (data.color !== undefined) { return data.color; } return cfg.color; }).transition()
-          .duration(100)
-          .attr('r', (data) => { if (data.radius !== undefined) { return Math.floor(data.radius * 1.5); } return Math.floor(cfg.radius * 1.5); });
+
+        inflateKnot(this);
+
         tip.html('');
         if (d.img !== undefined) {
           tip.append('img').style('float', 'left').style('margin-right', '4px').attr('src', d.img)
@@ -187,14 +201,23 @@ const TimeKnots = {
           .duration(100)
           .style('opacity', 0.9);
       })
-      .on('mouseout', function () {
-        d3.select(this)
-          .style('fill', (data) => { if (data.background !== undefined) { return data.background; } return cfg.background; }).transition()
-          .duration(100)
-          .attr('r', (data) => { if (data.radius !== undefined) { return data.radius; } return cfg.radius; });
+      .on('mouseout', function (d) {
+        if (!d.selected) {
+          deflateKnot(this);
+        }
         tip.transition()
           .duration(100)
           .style('opacity', 0);
+      })
+      .on('click', (d) => {
+        if (typeof cfg.onClick === 'function') {
+          cfg.onClick(d);
+        }
+      })
+      .each(function (d) {
+        if (d.selected) {
+          inflateKnot(this, d);
+        }
       });
 
     let format;
@@ -228,5 +251,7 @@ const TimeKnots = {
       .on('mouseout', () => tip.style('opacity', 0).style('top', '0px').style('left', '0px'));
   },
 };
+
+window.TimeKnots = TimeKnots;
 
 export default TimeKnots;

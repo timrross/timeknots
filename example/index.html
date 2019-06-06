@@ -76,7 +76,10 @@
             color: "teal",
             width: 500,
             showLabels: true,
-            labelFormat: "%Y"
+            labelFormat: "%Y",
+            onClick: function(d) {
+                console.log('clicked', d);
+            }
         });
 
         var kurbickFilms = [{
