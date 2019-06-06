@@ -3,8 +3,8 @@ import * as d3 from 'd3';
 const TimeKnots = {
   draw(id, events, options) {
     const cfg = {
-      width: 600,
-      height: 200,
+      width: null, // No default width, just fills the SVG.
+      height: 200, // set a default height.
       radius: 10,
       lineWidth: 4,
       color: '#999',
@@ -32,6 +32,10 @@ const TimeKnots = {
     if (cfg.addNow !== false) {
       events.push({ date: new Date(), name: cfg.addNowLabel || 'Today' });
     }
+    const { width } = d3.select(id).node().getBoundingClientRect();
+    if (cfg.width === null) {
+      cfg.width = width;
+    }
     const tip = d3.select(id)
       // Set the main element to position relative so the tip is positioned correctly.
       .style('position', 'relative')
@@ -45,7 +49,9 @@ const TimeKnots = {
       .style('padding', '5px 10px 5px 10px')
       .style('-moz-border-radius', '8px 8px')
       .style('border-radius', '8px 8px');
-    const svg = d3.select(id).append('svg').attr('width', cfg.width).attr('height', cfg.height);
+    const svg = d3.select(id)
+      .append('svg')
+      .style('width', '100%');
     // Calculate times in terms of timestamps
     if (!cfg.dateDimension) {
       timestamps = events.map(d => d.value); // new Date(d.date).getTime()});
