@@ -18,6 +18,8 @@ const TimeKnots = {
       seriesColor: d3.scaleOrdinal(d3.schemeCategory10),
       dateDimension: true,
       onClick: null,
+      onMouseover: null,
+      onMouseout: null,
     };
 
     let timestamps;
@@ -211,6 +213,9 @@ const TimeKnots = {
             .duration(100)
             .style('opacity', 0.9);
         }
+
+        if (typeof cfg.onMouseover === 'function') {
+          cfg.onMouseover(d);
         }
       })
       .on('mouseout', function (d) {
@@ -222,6 +227,10 @@ const TimeKnots = {
           tip.transition()
             .duration(100)
             .style('opacity', 0);
+        }
+
+        if (typeof cfg.onMouseout === 'function') {
+          cfg.onMouseout(d);
         }
       })
       .on('click', (d) => {
