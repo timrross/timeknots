@@ -27,4 +27,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
   ],
+  externals: {
+    d3: 'd3',
+  },
 };
