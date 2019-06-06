@@ -100,6 +100,23 @@ const TimeKnots = {
         .attr('r', (d) => { if (d.radius !== undefined) { return d.radius; } return cfg.radius; });
     }
 
+    /**
+     * Get the color defined in the node or use a color series.
+     * @param {} node
+     */
+    function getColor(node) {
+      if (node.color !== undefined) {
+        return node.color;
+      }
+      if (node.series !== undefined) {
+        if (series.indexOf(node.series) < 0) {
+          series.push(node.series);
+        }
+        return cfg.seriesColor(series.indexOf(node.series));
+      }
+      return cfg.color;
+    }
+
     svg.selectAll('line')
       .data(events).enter().append('line')
       .attr('class', 'timeline-line')
@@ -141,18 +158,9 @@ const TimeKnots = {
         const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
         return Math.floor(step * (datum - minValue));
       })
-      .style('stroke', (d) => {
-        if (d.color !== undefined) {
-          return d.color;
         }
-        if (d.series !== undefined) {
-          if (series.indexOf(d.series) < 0) {
-            series.push(d.series);
-          }
-          return cfg.seriesColor(series.indexOf(d.series));
-        }
-        return cfg.color;
       })
+      .style('stroke', getColor)
       .style('stroke-width', cfg.lineWidth);
 
     svg.selectAll('circle')
@@ -160,18 +168,7 @@ const TimeKnots = {
       .append('circle')
       .attr('class', 'timeline-event')
       .attr('r', (d) => { if (d.radius !== undefined) { return d.radius; } return cfg.radius; })
-      .style('stroke', (d) => {
-        if (d.color !== undefined) {
-          return d.color;
-        }
-        if (d.series !== undefined) {
-          if (series.indexOf(d.series) < 0) {
-            series.push(d.series);
-          }
-          return cfg.seriesColor(series.indexOf(d.series));
-        }
-        return cfg.color;
-      })
+      .style('stroke', getColor)
       .style('stroke-width', (d) => { if (d.lineWidth !== undefined) { return d.lineWidth; } return cfg.lineWidth; })
       .style('fill', (d) => { if (d.background !== undefined) { return d.background; } return cfg.background; })
       .attr('cy', (d) => {
