@@ -12,7 +12,8 @@ const TimeKnots = {
       dateFormat: '%Y/%m/%d %H:%M:%S',
       horizontalLayout: true,
       showLabels: false,
-      labelFormat: '%Y/%m/%d %H:%M:%S',
+      labelDateFormat: '%Y/%m/%d',
+      labelFormat: label => `${label.name} <small>${label.date}</small>`,
       showTip: true,
       addNow: false,
       seriesColor: d3.scaleOrdinal(d3.schemeCategory10),
@@ -191,14 +192,19 @@ const TimeKnots = {
       .on('mouseover', function (d) {
         let format;
         let datetime;
-        let dateValue;
+        let label;
         if (cfg.dateDimension) {
           format = d3.timeFormat(cfg.dateFormat);
           datetime = format(new Date(d.date));
-          dateValue = (datetime !== '') ? (`${d.name} <small>(${datetime})</small>`) : d.name;
+          label = {
+            name: d.name,
+            date: datetime,
+          };
         } else {
-          datetime = d.value;
-          dateValue = `${d.name} <small>(${d.value})</small>`;
+          label = {
+            name: d.name,
+            date: '',
+          };
         }
 
         inflateKnot(this);
@@ -208,7 +214,7 @@ const TimeKnots = {
           if (d.img !== undefined) {
             tip.append('img').attr('src', d.img);
           }
-          tip.append('div').html(dateValue);
+          tip.append('div').html(cfg.labelFormat(label));
           tip.transition()
             .duration(100)
             .style('opacity', 0.9);
@@ -248,9 +254,9 @@ const TimeKnots = {
     let startString;
     let endString;
     // Adding start and end labels
-    if (cfg.showLabels !== false) {
+    if (cfg.showLabels === true) {
       if (cfg.dateDimension) {
-        format = d3.timeFormat(cfg.labelFormat);
+        format = d3.timeFormat(cfg.labelDateFormat);
         startString = format(new Date(minValue));
         endString = format(new Date(maxValue));
       } else {
