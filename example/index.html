@@ -9,36 +9,46 @@
 
     <style>
         body {
-            font: 18px "Helvetica Neue";
-            font-weight: 300;
-            text-rendering: optimizeLegibility;
-            margin-left: 20px;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-weight: 400;
+            font-size: 18px;
+        }
+        .row {
+            margin-bottom: 3rem;
         }
     </style>
 </head>
 
 <body>
-    <div class="fluid-row">
-        <div class="well span11 pagination-centered">
-            <h1>Demos using timeknots</h1>
-            <h5><a href='https://github.com/timrross/timeknots'>https://github.com/timrross/timeknots</a></h5>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>Demos using timeknots</h1>
+                <h5><a href='https://github.com/timrross/timeknots'>https://github.com/timrross/timeknots</a></h5>
+            </div>
         </div>
-    </div>
-    <div class="fluid-row">
-        <div class="span3">
-            <h2>Stanley Kubrick's movies</h2>
-            <h5>Part of Kubrick's Filmography form Wikipedia</h5>
-            <div id="timeline1" style="width:500px;"></div>
-            <h2>Numeric, non date data</h2>
-            <div id="timelineNonDate" style="width:200px;"></div>
+        <div class="row">
+            <div class="col">
+                <h3>Stanley Kubrick's movies</h3>
+                <p>Part of Kubrick's Filmography form Wikipedia</p>
+                <div id="timeline1"></div>
+                <p>Numeric, non date data</p>
+                <div id="timelineNonDate"></div>
+            </div>
         </div>
-        <div class="span6">
-            <h2>My schedule</h2>
-            <h5>Imaginary schedule in a vertical layout</h5>
-            <div id="timeline2" style="width:200px;height: 450px;"></div>
-            <h2>This week's agenda</h2>
-            <h5>Shows random meetings/free days</h5>
-            <div id="timeline3" style="width:500px;height: 200px;"></div>
+        <div class="row">
+            <div class="col">
+                <h3>My schedule</h3>
+                <p>Imaginary schedule in a vertical layout</p>
+                <div id="timeline2"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3>This week's agenda</h3>
+                <p>Shows random meetings/free days</p>
+                <div id="timeline3"></div>
+            </div>
         </div>
     </div>
     <script type="text/javascript">
