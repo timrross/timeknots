@@ -16,6 +16,33 @@
         .row {
             margin-bottom: 3rem;
         }
+        .timeline-tip {
+            font-family: 'Helvetica Neue';
+            font-weight:300;
+            background:rgba(0,0,0,0.5);
+            color:white;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+        .expanded-timeline-tip {
+            width: 100%;
+            min-height: 100px;
+            font-size: 14px;
+            background:rgba(0,0,0,0.5);
+            color:white;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: all 0.4s ease-in-out;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .expanded-timeline-tip p:last-child {
+            margin-bottom: 0;
+        }
+        .expanded-timeline-tip.show {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
 </head>
 
@@ -25,6 +52,13 @@
             <div class="col">
                 <h1>Demos using timeknots</h1>
                 <h5><a href='https://github.com/timrross/timeknots'>https://github.com/timrross/timeknots</a></h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h3>Timeline using event handlers to show custom tips.</h3>
+                <div id="timeline"></div>
+                <div class="expanded-timeline-tip"></div>
             </div>
         </div>
         <div class="row">
@@ -52,6 +86,29 @@
         </div>
     </div>
     <script type="text/javascript">
+
+    var events = [{"date":"01\/01\/1995","name":"1995","description":"Gr\u00fcndung des Unternehmens in Schalchen. Beginn der Produktion mit manuellen Montaget\u00e4tigkeiten."},{"date":"01\/01\/1996","name":"1996","description":"Einstieg von Ing. G\u00fcnter Benninger. Das Unternehmen erhielt erste Kleinmengenauftr\u00e4ge zur Fertigung von umgespritzten Teilen: Kontakte und Gitter f\u00fcr die Automobilindustrie."},{"date":"01\/01\/1998","name":"1998","description":"Neubau eines modernen Verwaltungs- und Produktionsgeb\u00e4udes\u00a0mit\u00a01.200 m\u00b2\u00a0Fl\u00e4che"},{"date":"01\/01\/2000","name":"2000","description":"\u00dcbernahme der ehemaligen FORMPLAST + FORMBAU Lechler und Gr\u00fcndung der PROMOTECH Kunststofftechnik GmbH in Langenzenn bei N\u00fcrnberg (D)"},{"date":"01\/01\/2003","name":"2003","description":"Integration der Produktion von Langenzenn in Schalchen"},{"date":"01\/06\/2003","name":"2003","description":"Expansion auf eine Gesamtfl\u00e4che von 5.400 m\u00b2"},{"date":"01\/01\/2005","name":"2005","description":"Integration des Werkzeugbaus von Langenzenn in Schalchen"},{"date":"01\/01\/2007","name":"2007","description":"Gr\u00fcndung PROMOTECH Bosnien"},{"date":"01\/01\/2014","name":"2014","description":"Erweiterung des Betriebsgel\u00e4ndes auf 10.000 m\u00b2"},{"date":"01\/01\/2015","name":"2015","description":"20-j\u00e4hriges Firmenjubil\u00e4um\r\n\r\nZukauf von 28.000 m\u00b2 Bauland"},{"date":"01\/01\/2018","name":"2018","description":"Erweiterung der Produktionsfl\u00e4che um 1.700 m\u00b2\r\n(11.700 m\u00b2 Gesamtausma\u00df)\r\n\r\nNeues Verwaltungs- und Sozialgeb\u00e4udes mit einer Fl\u00e4che von 950 m\u00b2\r\n(2.200 m\u00b2 Verwaltungsbereich)\r\n\r\nEr\u00f6ffnung des betriebseigenen Restaurants Promolounge und des Fitnessstudios Promofit"},{"date":"01\/12\/2018","name":"December 2018","description":"Mit Michael Benninger, der seinen Vater nun in der Gesch\u00e4ftsf\u00fchrung unterst\u00fctzt, wird das Familienunternehmen in die zweite Generation gef\u00fchrt"}];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let expandedTip = document.getElementsByClassName('expanded-timeline-tip')[0];
+        TimeKnots.draw("#timeline", events, {
+            color: '#a2182e',
+            showLabels: true,
+            showTip: false,
+            labelDateFormat: "%Y",
+            labelFormat: event => `${event.name}`,
+            onMouseover: function(d) {
+                console.log('mouseover', d);
+                expandedTip.classList.add('show');
+                expandedTip.innerHTML = `<h3>${d.name}</h3><p>${d.description}</p>`;
+            },
+            onMouseout: function(d) {
+                console.log('mouseout', d);
+                expandedTip.classList.remove('show');
+            }
+        });
+    })
+
         var nonDatedata = [{
             "value": 224,
             "name": "Player 1"
@@ -76,7 +133,7 @@
             color: "teal",
             width: 500,
             showLabels: true,
-            labelFormat: "%Y",
+            labelDateFormat: "%Y",
             onClick: function(d) {
                 console.log('clicked', d);
             }
@@ -118,7 +175,7 @@
             color: "#696",
             width: 500,
             showLabels: true,
-            labelFormat: "%Y"
+            labelDateFormat: "%Y"
         });
 
         var mySchedule = [{
@@ -153,12 +210,12 @@
             date: "2012-09-28T23:00:00"
         }];
         TimeKnots.draw("#timeline2", mySchedule, {
-            horizontalLayout: false,
+            verticalLayout: true,
             color: "#669",
             height: 450,
             width: 200,
             showLabels: true,
-            labelFormat: "%H:%M"
+            labelDateFormat: "%H:%M"
         });
 
 
@@ -186,6 +243,7 @@
         }
         TimeKnots.draw("#timeline3", agenda, {
             dateFormat: "%A",
+            color: false,
             radius: 20
         });
     </script>
