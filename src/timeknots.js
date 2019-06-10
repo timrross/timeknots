@@ -118,6 +118,22 @@ const TimeKnots = {
       return cfg.color;
     }
 
+    function getCircleX(d) {
+      if (cfg.verticalLayout) {
+        return Math.floor(cfg.width / 2);
+      }
+      const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
+      return Math.floor(step * (datum - minValue) + margin);
+    }
+
+    function getCircleY(d) {
+      if (cfg.verticalLayout) {
+        const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
+        return Math.floor(step * (datum - minValue) + margin);
+      }
+      return Math.floor(cfg.height / 2);
+    }
+
     svg.selectAll('line')
       .data(events).enter().append('line')
       .attr('class', 'timeline-line')
@@ -170,21 +186,8 @@ const TimeKnots = {
       .style('stroke', getColor)
       .style('stroke-width', (d) => { if (d.lineWidth !== undefined) { return d.lineWidth; } return cfg.lineWidth; })
       .style('fill', (d) => { if (d.background !== undefined) { return d.background; } return cfg.background; })
-      .attr('cy', (d) => {
-        if (cfg.verticalLayout) {
-          const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
-          return Math.floor(step * (datum - minValue) + margin);
-        }
-        return Math.floor(cfg.height / 2);
-      })
-      .attr('cx', (d) => {
-        if (cfg.verticalLayout) {
-          return Math.floor(cfg.width / 2);
-        }
-        const datum = (cfg.dateDimension) ? new Date(d.date).getTime() : d.value;
-        const x = Math.floor(step * (datum - minValue) + margin);
-        return x;
-      })
+      .attr('cy', getCircleY)
+      .attr('cx', getCircleX)
       .on('mouseover', function (d) {
         let format;
         let datetime;
@@ -246,28 +249,19 @@ const TimeKnots = {
         }
       });
 
-    let format;
-    let startString;
-    let endString;
-    // Adding start and end labels
     if (cfg.showLabels === true) {
-      if (cfg.dateDimension) {
-        format = d3.timeFormat(cfg.labelDateFormat);
-        startString = format(new Date(minValue));
-        endString = format(new Date(maxValue));
-      } else {
-        startString = minValue;
-        endString = maxValue;
-      }
-      svg.append('text')
-        .text(startString).style('font-size', '70%')
-        .attr('x', function getX() { if (cfg.verticalLayout) { return Math.floor(this.getBBox().width / 2); } return d3.max([0, (margin - this.getBBox().width / 2)]); })
-        .attr('y', function getY() { if (cfg.verticalLayout) { return margin + this.getBBox().height / 2; } return Math.floor(cfg.height / 2 + (margin + this.getBBox().height)); });
-
-      svg.append('text')
-        .text(endString).style('font-size', '70%')
-        .attr('x', function getX() { if (cfg.verticalLayout) { return Math.floor(this.getBBox().width / 2); } return cfg.width - d3.max([this.getBBox().width, (margin + this.getBBox().width / 2)]); })
-        .attr('y', function getY() { if (cfg.verticalLayout) { return cfg.height - margin + this.getBBox().height / 2; } return Math.floor(cfg.height / 2 + (margin + this.getBBox().height)); });
+      // Set up the labels
+      svg.selectAll('text')
+        .data(events)
+        .enter()
+        .append('text')
+        .text(d => d.name)
+        .each(function () {
+          const bbox = this.getBBox();
+          d3.select(this)
+            .attr('x', d => getCircleX(d) - (bbox.width / 2))
+            .attr('y', d => getCircleY(d) + bbox.height + margin);
+        });
     }
 
     svg.on('mousemove', function () {
