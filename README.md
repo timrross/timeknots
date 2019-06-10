@@ -35,4 +35,4 @@ It is possible to include or override certain options for particular knots. Thes
 Examples
 ========
 
-A set of example can be found at [http://graves.cl/timeknots/example/index.html](http://graves.cl/timeknots/example/index.html) 
+A set of example can be found at [https://timrross.github.io/timeknots/](https://timrross.github.io/timeknots/)
